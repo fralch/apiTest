@@ -3,21 +3,27 @@ import { View, Text, Button, Alert, StyleSheet } from 'react-native';
 
 const TestApiConnection: React.FC = () => {
   const testApi = async () => {
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    const raw = JSON.stringify({
+      name: 'Frank',
+    });
+
+    const requestOptions: RequestInit = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    };
+
     try {
-      const response = await fetch('http://45.236.131.189/users', {
-        method: 'POST', // Cambiado a POST
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: 'Frank',
-        }),
-      });
+      const response = await fetch('http://45.236.131.189/users', requestOptions);
 
       if (response.ok) {
-        const data = await response.json();
-        console.log('Conexión exitosa:', data);
-        Alert.alert('Éxito', `Conexión exitosa a la API\nID: ${data.id}`);
+        const result = await response.text();
+        console.log('Respuesta de la API:', result);
+        Alert.alert('Éxito', `Respuesta de la API:\n${result}`);
       } else {
         console.error('Error en la respuesta:', response.status);
         Alert.alert('Error', `Error en la API: ${response.status}`);
@@ -30,7 +36,7 @@ const TestApiConnection: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Prueba de conexión a la API (POST)</Text>
+      <Text style={styles.title}>Prueba de conexión a la API</Text>
       <Button title="Probar conexión" onPress={testApi} />
     </View>
   );
